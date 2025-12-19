@@ -1,9 +1,17 @@
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
+
 public class RunSnakeGameHeadless {
     public static void main(String[] args) {
         System.out.println("--- Snake Game Headless Runner ---");
         try {
             // Instantiate game without starting the Swing Timer
             SnakeGame game = new SnakeGame(false);
+
+            // Set size explicitly as it might not be set in headless panel
+            game.setSize(600, 600);
 
             int initialX = game.getHeadX();
             int initialY = game.getHeadY();
@@ -29,6 +37,21 @@ public class RunSnakeGameHeadless {
                 System.out.println("\nFAILURE: Snake did not move as expected.");
                 System.out.println("Expected X: " + expectedX + ", Actual X: " + game.getHeadX());
             }
+
+            // Generate Screenshot
+            System.out.println("\nGenerating screenshot 'snake_game.png'...");
+            BufferedImage bi = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = bi.createGraphics();
+
+            // Manually paint background since paintComponent calls super which might depend on peer
+            g2d.setColor(java.awt.Color.black);
+            g2d.fillRect(0, 0, 600, 600);
+
+            game.paintComponent(g2d);
+            g2d.dispose();
+
+            ImageIO.write(bi, "png", new File("snake_game.png"));
+            System.out.println("Screenshot saved.");
 
         } catch (Exception e) {
             System.err.println("An error occurred during headless execution:");
